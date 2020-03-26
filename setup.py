@@ -26,7 +26,7 @@ setup(
     use_scm_version={"root": here},
     setup_requires=["setuptools_scm >= 1.15"],
     install_requires=[
-        "sphinx >= 1.5.6",
+        "sphinx == 1.5.6",
         "sphinxcontrib-httpdomain >= 1.5.0",
         "PyYAML >= 3.12",
         "jsonschema >= 2.5.1",
