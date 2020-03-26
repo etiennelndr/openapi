@@ -12,7 +12,7 @@ with open(os.path.join(here, "README.rst"), "r", encoding="utf-8") as f:
 
 
 setup(
-    name="sphinxcontrib-openapi",
+    name="jarvis-openapi",
     description="OpenAPI (fka Swagger) spec renderer for Sphinx",
     long_description=long_description,
     license="BSD",
