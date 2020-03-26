@@ -417,25 +417,26 @@ def openapihttpdomain(spec, **options):
     if 'request' in options:
         render_request = True
 
+    spec_copy = spec.copy()
     # Filter on HTTP methods
     if "methods" in options:
         methods = options["methods"]
         for endpoint in paths:
-            endpoints_copy = spec['paths'][endpoint].copy()
+            endpoints_copy = spec_copy['paths'][endpoint].copy()
             for method, properties in endpoints_copy.items():
                 if method not in methods:
-                    spec['paths'][endpoint].pop(method)
+                    spec_copy['paths'][endpoint].pop(method)
 
     convert = utils.get_text_converter(options)
 
     # https://github.com/OAI/OpenAPI-Specification/blob/3.0.2/versions/3.0.0.md#paths-object
     if 'group' in options:
         groups = collections.OrderedDict(
-            [(x['name'], []) for x in spec.get('tags', {})]
+            [(x['name'], []) for x in spec_copy.get('tags', {})]
             )
 
         for endpoint in paths:
-            for method, properties in spec['paths'][endpoint].items():
+            for method, properties in spec_copy['paths'][endpoint].items():
                 key = properties.get('tags', [''])[0]
                 groups.setdefault(key, []).append(_httpresource(
                     endpoint,
@@ -454,7 +455,7 @@ def openapihttpdomain(spec, **options):
             generators.extend(groups[key])
     else:
         for endpoint in paths:
-            for method, properties in spec['paths'][endpoint].items():
+            for method, properties in spec_copy['paths'][endpoint].items():
                 generators.append(_httpresource(
                     endpoint,
                     method,
