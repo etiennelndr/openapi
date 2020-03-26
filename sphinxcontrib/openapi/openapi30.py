@@ -417,6 +417,15 @@ def openapihttpdomain(spec, **options):
     if 'request' in options:
         render_request = True
 
+    # Filter on HTTP methods
+    if "methods" in options:
+        methods = options["methods"]
+        for endpoint in paths:
+            endpoints_copy = spec['paths'][endpoint].copy()
+            for method, properties in endpoints_copy.items():
+                if method not in methods:
+                    spec['paths'][endpoint].pop(method)
+
     convert = utils.get_text_converter(options)
 
     # https://github.com/OAI/OpenAPI-Specification/blob/3.0.2/versions/3.0.0.md#paths-object
