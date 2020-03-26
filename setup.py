@@ -56,5 +56,6 @@ setup(
         "Framework :: Sphinx",
         "Framework :: Sphinx :: Extension",
     ],
+    namespace_packages=["sphinxcontrib"],
     python_requires=">=3.5",
 )
