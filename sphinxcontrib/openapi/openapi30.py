@@ -17,7 +17,12 @@ import re
 from urllib import parse
 from http.client import responses as http_status_codes
 
+from sphinx.util import logging
+
 from sphinxcontrib.openapi import utils
+
+
+LOG = logging.getLogger(__name__)
 
 # https://github.com/OAI/OpenAPI-Specification/blob/3.0.2/versions/3.0.0.md#data-types
 _TYPE_MAPPING = {
@@ -170,6 +175,7 @@ def _example(media_type_objects, method=None, endpoint=None, status=None,
             if not example:
                 if re.match(r"application/[a-zA-Z\+]*json", content_type) is \
                         None:
+                    LOG.info('skipping non-JSON example generation.')
                     continue
                 example = _parse_schema(content['schema'], method=method)
 
