@@ -12,7 +12,7 @@ with open(os.path.join(here, "README.rst"), "r", encoding="utf-8") as f:
 
 
 setup(
-    name="jarvis-openapi",
+    name="sphinxcontrib-openapi",
     description="OpenAPI (fka Swagger) spec renderer for Sphinx",
     long_description=long_description,
     license="BSD",
@@ -26,7 +26,7 @@ setup(
     use_scm_version={"root": here},
     setup_requires=["setuptools_scm >= 1.15"],
     install_requires=[
-        "sphinx == 1.5.6",
+        "sphinx >= 2.0",
         "sphinxcontrib-httpdomain >= 1.5.0",
         "PyYAML >= 3.12",
         "jsonschema >= 2.5.1",
