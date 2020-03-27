@@ -319,6 +319,17 @@ def _httpresource(endpoint, method, properties, convert, render_examples,
         for line in convert(response['description']).splitlines():
             yield '{indent}{indent}{line}'.format(**locals())
 
+        if not is_2xx_response(status):
+            continue
+        json_information = response.get("content", {}).get("application/json", {})
+        if json_information:
+            schema = json_information.get("schema")
+            yield ''
+            for line in convert_json_schema(schema, directive=':>json'):
+                yield '{indent}{line}'.format(**locals())
+            yield ''
+            yield ''
+
         # print response example
         if render_examples:
             for line in _example(
@@ -360,6 +371,84 @@ def _httpresource(endpoint, method, properties, convert, render_examples,
                         yield ''
 
     yield ''
+
+
+def convert_json_schema(schema, directive=':<json'):
+    """
+    Convert json schema to `:<json` sphinx httpdomain.
+    """
+
+    output = []
+
+    def _convert(schema, name='', required=False):
+        """
+        Fill the output list, with 2-tuple (name, template)
+
+        i.e: ('user.age', 'str user.age: the age of user')
+
+        This allow to sort output by field name
+        """
+
+        type_ = schema.get('type', 'any')
+        required_properties = schema.get('required', ())
+        if type_ == 'object' and schema.get('properties'):
+            for prop, next_schema in schema.get('properties', {}).items():
+                _convert(
+                    next_schema, '{name}.{prop}'.format(**locals()),
+                    (prop in required_properties))
+
+        elif type_ == 'array':
+            _convert(schema['items'], name + '[]')
+
+        else:
+            if name:
+                name = name.lstrip('.')
+                constraints = []
+                if required:
+                    constraints.append('required')
+                if schema.get('readOnly', False):
+                    constraints.append('read only')
+                if constraints:
+                    constraints = '({})'.format(', '.join(constraints))
+                else:
+                    constraints = ''
+
+                if schema.get('description', ''):
+                    if constraints:
+                        output.append((
+                            name,
+                            '{type_} {name}:'
+                            ' {schema[description]}'
+                            ' {constraints}'.format(**locals())))
+                    else:
+                        output.append((
+                            name,
+                            '{type_} {name}:'
+                            ' {schema[description]}'.format(**locals())))
+
+                else:
+                    if constraints:
+                        output.append(
+                            (name,
+                             '{type_} {name}:'
+                             ' {constraints}'.format(**locals())))
+                    else:
+                        output.append(
+                            (name,
+                             '{type_} {name}:'.format(**locals())))
+
+    _convert(schema)
+
+    for _, render in sorted(output):
+        yield '{} {}'.format(directive, render)
+
+
+def is_2xx_response(status):
+    try:
+        return 200 <= int(status) < 300
+    except ValueError:
+        pass
+    return False
 
 
 def _header(title):
