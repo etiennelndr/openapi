@@ -417,7 +417,9 @@ def openapihttpdomain(spec, **options):
     if 'request' in options:
         render_request = True
 
-    spec_copy = spec.copy()
+    # Instead of doing a simple `copy`, operate a deep copy of :param:`spec`
+    # (`copy` worked on Windows but not on Linux).
+    spec_copy = copy.deepcopy(spec)
     # Filter on HTTP methods
     if "methods" in options:
         methods = options["methods"]
