@@ -398,7 +398,9 @@ def convert_json_schema(schema, directive=':<json'):
                     (prop in required_properties))
 
         elif type_ == 'array':
-            _convert(schema['items'], name + '[]')
+            schema_items = copy.deepcopy(schema["items"])
+            schema_items["description"] = schema["description"]
+            _convert(schema_items, name + '[]')
 
         else:
             if name:
