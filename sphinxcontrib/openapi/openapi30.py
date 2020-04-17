@@ -286,16 +286,8 @@ def _httpresource(endpoint, method, properties, convert, render_examples,
         request_content = properties.get('requestBody', {}).get('content', {})
         if request_content and 'application/json' in request_content:
             schema = request_content['application/json']['schema']
-            req_properties = json.dumps(schema['properties'], indent=2,
-                                        separators=(',', ':'))
-            yield '{indent}**Request body:**'.format(**locals())
-            yield ''
-            yield '{indent}.. sourcecode:: json'.format(**locals())
-            yield ''
-            for line in req_properties.splitlines():
-                # yield indent + line
-                yield '{indent}{indent}{line}'.format(**locals())
-                # yield ''
+            for line in convert_json_schema(schema, directive=':<json'):
+                yield '{indent}{line}'.format(**locals())
 
     # print request example
     if render_examples:
