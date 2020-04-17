@@ -316,8 +316,11 @@ def _httpresource(endpoint, method, properties, convert, render_examples,
         json_information = response.get("content", {}).get("application/json", {})
         if json_information:
             schema = json_information.get("schema")
+            yield ''
             for line in convert_json_schema(schema, directive=':>json'):
                 yield '{indent}{line}'.format(**locals())
+            yield ''
+            yield ''
 
         # print response example
         if render_examples:
